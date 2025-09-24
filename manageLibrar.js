@@ -125,7 +125,7 @@ function renderLibrary(livres = bibliotheque.livres) {
             <td>${livre.isbn}</td>
             <td>${livre.annee}</td>
             <td>${livre.genre}</td>
-            <td>${livre.disponible ? "Disponible" : "Emprunté"}</td>
+            <td class="${livre.disponible ? 'text-success' : 'text-danger'}">${livre.disponible ? "Disponible" : "Emprunté"}</td>
             <td><button class="btn btn-sm btn-danger" data-id="${livre.id}">Supprimer</button></td>
         `;
 
