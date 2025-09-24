@@ -1,0 +1,26 @@
+/* style.css - simples améliorations visuelles */
+body {
+  background: #f6f8fb;
+  color: #212529;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+.navbar-brand {
+  font-weight: 600;
+}
+
+.card {
+  min-height: 220px;
+}
+
+/* Détails */
+#addBook .meta {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+/* petite touche pour la table */
+.table thead th {
+  vertical-align: middle;
+  font-size: 0.9rem;
+}
