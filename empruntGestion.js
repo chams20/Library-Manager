@@ -209,8 +209,24 @@ function renderEmprunts(emprunts = bibliotheque.emprunts) {
       <td>${emprunt.dateEmprunt}</td>
       <td>${emprunt.dateRetourPrevue}</td>
       <td>${emprunt.dateRetourEffective ?? "-"}</td>
+      <td>
+        ${
+          emprunt.dateRetourEffective
+            ? `<span class="text-success">Livre retourné</span>`
+            : `<button class="btn btn-sm btn-success" livre-id="${livre.id}">Retourner un livre</button>`
+        }
+      </td>
     `;
     tbody.appendChild(tr);
+  });
+
+  // Ajout des écouteurs sur les boutons "Retourner"
+  const boutons = tbody.querySelectorAll("button[livre-id]");
+  boutons.forEach(btn => {
+      btn.addEventListener("click", function () {
+          const id = parseInt(this.getAttribute("livre-id"));
+          retournerLivre(id);
+      });
   });
 }
 
@@ -221,4 +237,53 @@ window.addEventListener("DOMContentLoaded", () => {
     renderEmprunts();
 });
 
-console.log(emprunterLivre(4, 5))
+
+/**
+ * Retourner un livre emprunté
+ * @param {number} livreId - ID du livre à retourner
+ */
+function retournerLivre(livreId) {
+  // Récupérer les données depuis le localStorage
+  const bibliotheque = JSON.parse(localStorage.getItem("bibliotheque")) || {};
+  if (!bibliotheque.emprunts || !bibliotheque.livres) return;
+
+  const messageEmprunt = document.getElementById("messageEmprunt");
+  messageEmprunt.classList.add("d-none");
+
+  // Trouver l'emprunt actif lié à ce livre
+  const emprunt = bibliotheque.emprunts.find(
+    e => e.livreId === livreId && !e.dateRetourEffective
+  );
+
+  // Si aucun emprunt actif trouvé
+  if (!emprunt) {
+    messageEmprunt.textContent = "Aucun emprunt actif trouvé pour ce livre.";
+    messageEmprunt.classList.remove("d-none");
+    messageEmprunt.classList.add("alert-danger");
+    return;
+  }
+
+  // Mettre la date de retour effective
+  emprunt.dateRetourEffective = new Date().toISOString().split("T")[0];
+
+  // Marquer le livre comme disponible
+  const livre = bibliotheque.livres.find(l => l.id === livreId);
+  if (livre) {
+    livre.disponible = true;
+  }
+
+  // Sauvegarder les modifications
+  localStorage.setItem("bibliotheque", JSON.stringify(bibliotheque));
+
+  // Afficher le message de succès
+  messageEmprunt.textContent = "Le livre a été retourné avec succès.";
+  messageEmprunt.classList.remove("d-none");
+
+  // Rafraîchir l'affichage si tu as une fonction dédiée
+  if (typeof renderLibrary === "function") {
+    renderLibrary();
+  }
+  if (typeof renderEmprunts === "function") {
+    renderEmprunts();
+  }
+}
